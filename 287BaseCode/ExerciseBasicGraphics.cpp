@@ -29,12 +29,23 @@ void open5x5Square(const glm::vec2 &centerPt, color C) {
 }
 // length of small arc = perc * 2pi
 // length of arc arc = 2pi - perc * 2pi
+// rad is radius
 void pieChart(const glm::vec2 &centerPt, float rad, float perc, const color &C1, const color &C2) {
 	float smallPerc = perc * M_2PI;
 	float bigPerc = M_2PI - smallPerc;
-	drawArc(frameBuffer, centerPt, rad, smallPerc / 2, bigPerc, white);
-	// use pointoncircle() to get exact lines
-	drawArc(frameBuffer, centerPt, rad, M_2PI, smallPerc / 2, red);
+	float startPoint = smallPerc / 2;
+	drawArc(frameBuffer, centerPt, rad, startPoint, bigPerc, C1);
+	glm::vec2 bigStartPoint(pointOnCircle(centerPt, rad, startPoint));
+	glm::vec2 bigEndPoint(pointOnCircle(centerPt, rad, (startPoint + bigPerc)));
+	drawLine(frameBuffer, centerPt.x, centerPt.y, bigStartPoint.x, bigStartPoint.y, C1);
+	drawLine(frameBuffer, centerPt.x, centerPt.y, bigEndPoint.x, bigEndPoint.y, C1);
+
+	glm::vec2 newCenter(centerPt.x + 20, centerPt.y);
+	glm::vec2 smallStartPoint(pointOnCircle(newCenter, rad, startPoint + bigPerc));
+	glm::vec2 smallEndPoint(pointOnCircle(newCenter, rad, startPoint));
+	drawArc(frameBuffer, newCenter, rad, (startPoint + bigPerc), smallPerc, C2);
+	drawLine(frameBuffer, newCenter.x, newCenter.y, smallStartPoint.x, smallStartPoint.y, C2);
+	drawLine(frameBuffer, newCenter.x, newCenter.y, smallEndPoint.x, smallEndPoint.y, C2);
 }
 
 void render() {
@@ -42,7 +53,7 @@ void render() {
 	closed5x5Square(50, 50, red);
 	closed5x5Square(glm::vec2(100, 50), green);
 	open5x5Square(glm::vec2(150, 50), blue);
-	pieChart(glm::vec2(250, 100), 50, 0.25, red, green);
+	pieChart(glm::vec2(250, 100), 50, 0.15, red, green);
 	frameBuffer.showColorBuffer();
 }
 

@@ -1,0 +1,15 @@
+﻿  ExerciseBasicGraphics.cpp
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(20): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(24): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(25): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(40): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(41): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(41): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(48): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+f:\libraries\documents\287basecodef18\287basecode\exercisebasicgraphics.cpp(56): warning C4305: 'argument': truncation from 'double' to 'float'
+  287BaseCode.vcxproj -> F:\Libraries\Documents\287BaseCodeF18\x64\Debug\287BaseCode.exe
+  287BaseCode.vcxproj -> F:\Libraries\Documents\287BaseCodeF18\x64\Debug\287BaseCode.pdb (Partial PDB)

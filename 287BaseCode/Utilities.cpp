@@ -310,7 +310,14 @@ glm::vec2 pointOnCircle(const glm::vec2 &center, float R, float angleRads) {
 */
 
 float directionInDegrees(float x1, float y1, float x2, float y2) {
-	return 0.0f;
+	float base = x1 - x2;
+	float height = y1 - y2;
+	float angle = rad2deg(atan(height / base));
+	if (height > 0 || base > 0) {
+		angle += 180;
+	}
+	//std::cout << "Base: " << base << "\n" << "Height: " << height << "\n" << "Angle: " << angle << "\n" << "Height / base: " << (height / base) << std::endl;
+	return abs(angle);
 }
 
 /**
@@ -324,7 +331,7 @@ float directionInDegrees(float x1, float y1, float x2, float y2) {
 */
 
 float directionInDegrees(const glm::vec2 &pt1, const glm::vec2 &pt2) {
-	return 0.0f;
+	return directionInDegrees(pt1.x, pt1.y, pt2.x, pt2.y);
 }
 
 /**
@@ -338,7 +345,7 @@ float directionInDegrees(const glm::vec2 &pt1, const glm::vec2 &pt2) {
 */
 
 float directionInDegrees(const glm::vec2 &targetPt) {
-	return 0.0f;
+	return directionInDegrees(0, 0, targetPt.x, targetPt.y);
 }
 
 
