@@ -191,8 +191,8 @@ float normalizeDegrees(float degrees) {
  */
 
 float normalizeRadians(float rads) {
-	float normalized = fmod(rads, M_PI);
-	return normalized < 0 ? normalized += M_PI : normalized;
+	float normalized = fmod(rads, M_2PI);
+	return normalized < 0 ? normalized += M_2PI : normalized;
 }
 
 /**
@@ -499,6 +499,7 @@ void map(float x, float xLow, float xHigh, float yLow, float yHigh, float &y) {
  * @test	quadratic(1,4,3) --> (-3,-1)
  */
 
+// check if discriminate < 0 and if so no real solutions
 std::vector<float> quadratic(float A, float B, float C) {
 	std::vector<float> result;
 	result.push_back(-1);
