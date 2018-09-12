@@ -203,7 +203,7 @@ float normalizeRadians(float rads) {
  */
 
 float rad2deg(float rads) {
-	return rads * (180.00f / M_PI);
+	return rads * 180.00f / M_PI;
 }
 
 /**
@@ -257,10 +257,8 @@ float max(float A, float B, float C) {
 void pointOnUnitCircle(float angleRads, float &x, float &y) {
 	// cos(rads) = x
 	// sin(rads) = y
-	// convert to radians to degrees then using trigonometry properties to find x and y
-	float angleDegs = rad2deg(angleRads);
-	x = cos(angleDegs);
-	y = sin(angleDegs);
+	x = cos(angleRads);
+	y = sin(angleRads);
 }
 
 /**
@@ -465,10 +463,11 @@ glm::vec2 rotate90CCW(const glm::vec2 &pt) {
  * @param 		  	yLow 	The low value of the y range.
  * @param 		  	yHigh	The high value of the y range.
  * @test	map(2, 0, 5, 10, 11) --> 10.4
+ * x' = (x - fromLow) * (((toHigh - toLow) / (fromHigh - fromLow)) + toLow)
  */
 
 float map(float x, float xLow, float xHigh, float yLow, float yHigh) {
-	return 0.0f;
+	return ((x - xLow) * ((yHigh - yLow) / (xHigh - xLow))) + yLow;
 }
 
 /**
@@ -484,7 +483,7 @@ float map(float x, float xLow, float xHigh, float yLow, float yHigh) {
  */
 
 void map(float x, float xLow, float xHigh, float yLow, float yHigh, float &y) {
-	y = 0.0f;
+	y = ((x - xLow) * ((yHigh - yLow) / (xHigh - xLow))) + yLow;
 }
 
 /**
@@ -502,8 +501,19 @@ void map(float x, float xLow, float xHigh, float yLow, float yHigh, float &y) {
 // check if discriminate < 0 and if so no real solutions
 std::vector<float> quadratic(float A, float B, float C) {
 	std::vector<float> result;
-	result.push_back(-1);
-	result.push_back(0);
+	float discriminate = pow(B, 2) - (4 * A * C);
+	if (discriminate >= 0) {
+		if (discriminate == 0) {
+			float x1 = (-B + sqrt(discriminate)) / (2 * A);
+			result.push_back(x1);
+		}
+		else {
+			float x1 = (-B + sqrt(discriminate)) / (2 * A);
+			float x2 = (-B - sqrt(discriminate)) / (2 * A);
+			result.push_back(std::min(x1, x2));
+			result.push_back(std::max(x1, x2));
+		}
+	}
 	return result;
 }
 
@@ -520,9 +530,24 @@ std::vector<float> quadratic(float A, float B, float C) {
 */
 
 int quadratic(float A, float B, float C, float roots[2]) {
-	roots[0] = 0.0f;
-	roots[1] = 1.0f;
-	return 2;
+	float discriminate = pow(B, 2) - (4 * A * C);
+
+	if (discriminate >= 0) {
+		if (discriminate == 0) {
+			float x1 = (-B + sqrt(discriminate)) / (2 * A);
+			roots[0] = x1;
+			return 1;
+		}
+		else {
+			float x1 = (-B + sqrt(discriminate)) / (2 * A);
+			float x2 = (-B - sqrt(discriminate)) / (2 * A);
+			roots[0] = std::max(x1, x2);
+			roots[1] = std::min(x1, x2);
+			return 2;
+		}
+	}
+
+	return 0;
 }
 
 /**
