@@ -272,6 +272,9 @@ void pointOnUnitCircle(float angleRads, float &x, float &y) {
 */
 
 float areaOfTriangle(float A, float B, float C) {
+	if (A > 0 || B > 0 || C > 0) {
+		return -1;
+	}
 	float S = (A + B + C) / 2.0f;
 	return sqrt((S * (S - A) * (S - B) * (S - C)));
 }
@@ -355,7 +358,11 @@ float directionInDegrees(const glm::vec2 &targetPt) {
 */
 
 glm::vec2 doubleIt(const glm::vec2 &V) {
-	return V;
+	// One way, not proper way
+	// return glm::vec2(V.x*2.0f, V.y*2.0f);
+
+	// Proper way
+	return 2.0f * V;
 }
 
 /**
@@ -366,7 +373,11 @@ glm::vec2 doubleIt(const glm::vec2 &V) {
 */
 
 glm::vec3 myNormalize(const glm::vec3 &V) {
-	return V;
+	// Can do this but are told not to
+	// return glm::normalize(V);
+
+	// Do it like this
+	return V / glm::length(V);
 }
 
 /**
@@ -378,7 +389,7 @@ glm::vec3 myNormalize(const glm::vec3 &V) {
 */
 
 bool isOrthogonal(const glm::vec3 &a, const glm::vec3 &b) {
-	return false;
+	return glm::dot(a, b) == 0 ? true : false;
 }
 
 /**
@@ -390,7 +401,7 @@ bool isOrthogonal(const glm::vec3 &a, const glm::vec3 &b) {
  */
 
 float cosBetween(const glm::vec2 &v1, const glm::vec2 &v2) {
-	return 0.0f;
+	return std::acos(glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2)));
 }
 
 /**
@@ -402,6 +413,7 @@ float cosBetween(const glm::vec2 &v1, const glm::vec2 &v2) {
  */
 
 float cosBetween(const glm::vec3 &v1, const glm::vec3 &v2) {
+
 	return 0.0f;
 }
 
@@ -438,7 +450,7 @@ float radsBetween(const glm::vec3 &v1, const glm::vec3 &v2) {
 */
 
 glm::vec3 project(const glm::vec3 &from, const glm::vec3 &onto) {
-	return glm::vec3();
+	return (glm::dot(from, onto) / pow(glm::length(onto),2)) * onto;
 }
 
 /**
@@ -560,7 +572,7 @@ int quadratic(float A, float B, float C, float roots[2]) {
  */
 
 float areaOfParallelogram(const glm::vec3 &v1, const glm::vec3 &v2) {
-	return 0.0f;
+	return std::asin(glm::length(glm::cross(v1, v2) / (glm::length(v1) * glm::length(v2))));
 }
 
 /**
@@ -573,7 +585,7 @@ float areaOfParallelogram(const glm::vec3 &v1, const glm::vec3 &v2) {
  */
 
 float areaOfTriangle(const glm::vec3 &pt1, const glm::vec3 &pt2, const glm::vec3 &pt3) {
-	return 0.0f;
+	return (1 / 2) * glm::length(glm::cross((pt3 - pt1), (pt2 - pt1)));
 }
 
 /**
@@ -611,7 +623,7 @@ bool isRightHandedOrthoNormalBasis(const glm::vec3 &u, const glm::vec3 &v, const
 */
 
 glm::vec3 pointingVector(const glm::vec3 &pt1, const glm::vec3 &pt2) {
-	return glm::vec3();
+	return glm::vec3(glm::normalize(pt2 - pt1));
 }
 
 /**
