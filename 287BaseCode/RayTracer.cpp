@@ -27,8 +27,9 @@ void RayTracer::raytraceScene(FrameBuffer &frameBuffer, int depth,
 
 	for (int y = 0; y < frameBuffer.getWindowHeight(); ++y) {
 		for (int x = 0; x < frameBuffer.getWindowWidth(); ++x) {
-			DEBUG_PIXEL = (x == xDebug && y == yDebug);
-			frameBuffer.setColor(x, y, gray);
+			Ray ray = camera.getRay((float)x, (float)y);
+			color colorForPixel = traceIndividualRay(ray, theScene, depth);
+			frameBuffer.setColor(x, y, colorForPixel);
 		}
 	}
 
@@ -49,8 +50,7 @@ color RayTracer::traceIndividualRay(const Ray &ray, const IScene &theScene, int 
 	color result = defaultColor;
 
 	if (theHit.t < FLT_MAX) {
-		color totalColor = theHit.material.ambient;
-		result = defaultColor;
+		result = theHit.material.diffuse;
 	}
 	return result;
 }

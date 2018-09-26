@@ -584,7 +584,7 @@ float areaOfParallelogram(const glm::vec3 &v1, const glm::vec3 &v2) {
  */
 
 float areaOfTriangle(const glm::vec3 &pt1, const glm::vec3 &pt2, const glm::vec3 &pt3) {
-	return (1 / 2) * glm::length(glm::cross((pt3 - pt1), (pt2 - pt1)));
+	return (1.0f / 2.0f) * glm::length(glm::cross((pt3 - pt1), (pt2 - pt1)));
 }
 
 /**

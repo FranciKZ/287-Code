@@ -100,7 +100,18 @@ void VisibleIShape::setTexture(Image *tex) {
 
 HitRecord VisibleIShape::findIntersection(const Ray &ray, const std::vector<VisibleIShapePtr> &surfaces) {
 	HitRecord theHit;
+	theHit.t = FLT_MAX;
+
+	for (int i = 0; i < surfaces.size(); i++) {
+		HitRecord thisHit;
+		surfaces[i]->findClosestIntersection(ray, thisHit);
+		if (thisHit.t < theHit.t && thisHit.t > 0) {
+			theHit = thisHit;
+			theHit.material = surfaces[i]->material;
+		}
+	}
 	return theHit;
+
 }
 
 /**
@@ -357,8 +368,22 @@ QuadricParameters QuadricParameters::ellipsoidQParams(const glm::vec3 &sz) {
  */
 
 void IPlane::findClosestIntersection(const Ray &ray, HitRecord &hit) const {
-	hit.t = 1.0f;
-	hit.surfaceNormal = glm::vec3();
+	float denom = glm::dot(ray.direction, n);
+
+	if (denom == 0) {
+		hit.t = FLT_MAX;
+	}
+	else {
+		float num = glm::dot(a - ray.origin, n);
+		hit.t = num / denom;
+		if (hit.t < 0) {
+			hit.t = FLT_MAX;
+		}
+		else {
+			hit.interceptPoint = ray.getPoint(hit.t);
+			hit.surfaceNormal = n;
+		}
+	}
 }
 
 /**

@@ -21,7 +21,10 @@ RaytracingCamera::RaytracingCamera(const glm::vec3 &viewingPos, const glm::vec3 
  */
 
 void RaytracingCamera::changeConfiguration(const glm::vec3 &viewingPos, const glm::vec3 &lookAtPt, const glm::vec3 &up) {
-	glm::vec3 u, v, w;
+	glm::vec3 viewingDirection = lookAtPt - viewingPos;
+	glm::vec3 w = glm::normalize(-viewingDirection);
+	glm::vec3 u = glm::normalize(glm::cross(up, w));
+	glm::vec3 v = glm::normalize(glm::cross(w, u));
 	cameraFrame.setFrame(viewingPos, u, v, w);
 }
 
@@ -62,8 +65,9 @@ OrthographicCamera::OrthographicCamera(const glm::vec3 &pos, const glm::vec3 &lo
  */
 
 glm::vec2 RaytracingCamera::getProjectionPlaneCoordinates(float x, float y) const {
-	glm::vec2 s;
-	return s;
+	float u = left + (right - left) * (x + 0.5f) / nx;
+	float v = bottom + (top - bottom) * (y + 0.5f) / ny;
+	return glm::vec2(u, v);
 }
 
 /**
@@ -75,6 +79,13 @@ glm::vec2 RaytracingCamera::getProjectionPlaneCoordinates(float x, float y) cons
 
 void PerspectiveCamera::calculateViewingParameters(int W, int H) {
 	// fill in nx, ny, distToPlane, top, bottom, left, and right
+	nx = (float)W;
+	ny = (float)H;
+	distToPlane = 1.0f / std::tan(fov / 2.0f);
+	top = 1.0f;
+	bottom = -top;
+	right = top * (nx / ny);
+	left = -right;
 }
 
 /**
@@ -112,8 +123,7 @@ Ray OrthographicCamera::getRay(float x, float y) const {
 Ray PerspectiveCamera::getRay(float x, float y) const {
 	glm::vec2 uv = getProjectionPlaneCoordinates(x, y);
 	glm::vec3 rayDirection = glm::normalize((float)(-distToPlane) * cameraFrame.w +
-																	uv.x * cameraFrame.u + 
-																	uv.y * cameraFrame.v); // Page 76
+												uv.x * cameraFrame.u + uv.y * cameraFrame.v);
 	return Ray(cameraFrame.origin, rayDirection);
 }
 
