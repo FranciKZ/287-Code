@@ -14,10 +14,18 @@ int main(int argc, char *argv[]) {
 	//std::cout << "Expected: 0" << " " << "Result: " << directionInDegrees(glm::vec2(1, 0)) << std::endl;
 	//std::cout << "Expected: 45" << " " << "Result: " << directionInDegrees(glm::vec2(1, 1)) << std::endl;
 
-	std::cout << normalizeRadians(9.42478) << std::endl;
-	std::cout << normalizeRadians(10.9956) << std::endl;
-	std::cout << normalizeRadians(6284.19) << std::endl;
-	std::cout << normalizeRadians(-6284.19) << std::endl;
-	std::cout << normalizeRadians(6285.19) << std::endl;
-	std::cout << normalizeRadians(-6285.19) << std::endl;
+	//std::cout << "new: " << cosBetween(glm::vec2(1, 0), glm::vec2(0, 1)) << std::endl;
+	//std::cout << "new: " << cosBetween(glm::vec2(2, 0), glm::vec2(0, 5)) << std::endl;
+	//std::cout << "new: " << cosBetween(glm::vec2(4, 8), glm::vec2(0, 5)) << std::endl;
+	//std::cout << "new: " << cosBetween(glm::vec2(-1, -1), glm::vec2(0, 1)) << std::endl;
+
+	//std::cout << "new: " << cosBetween(glm::vec3(1, 0, 0), glm::vec3(0, 1, 0)) << std::endl;
+	//std::cout << "new: " << cosBetween(glm::vec3(2, 0, 0), glm::vec3(0, 5, 0)) << std::endl;
+	//std::cout << "new: " << cosBetween(glm::vec3(0, 0, 1), glm::vec3(0, 5, 0)) << std::endl;
+	//std::cout << "new: " << cosBetween(glm::vec3(1, 1, 1), glm::vec3(0, 0, -1)) << std::endl;
+
+	//std::cout << areaOfTriangle(glm::vec3(1, 1, 1), glm::vec3(5, 5, 5), glm::vec3(-1, 5, 5)) << std::endl;
+
+	//std::cout << normalFrom3Points(glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 1, 0)) << std::endl;
+	//std::cout << normalFrom3Points(glm::vec3(1, 0, 0), glm::vec3(5, 5, 5), glm::vec3(0, -1, 4)) << std::endl;
 }

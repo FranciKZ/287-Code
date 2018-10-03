@@ -24,7 +24,6 @@ void RayTracer::raytraceScene(FrameBuffer &frameBuffer, int depth,
 	const RaytracingCamera &camera = *theScene.camera;
 	const std::vector<VisibleIShapePtr> &objs = theScene.visibleObjects;
 	const std::vector<PositionalLightPtr> &lights = theScene.lights;
-
 	for (int y = 0; y < frameBuffer.getWindowHeight(); ++y) {
 		for (int x = 0; x < frameBuffer.getWindowWidth(); ++x) {
 			Ray ray = camera.getRay((float)x, (float)y);

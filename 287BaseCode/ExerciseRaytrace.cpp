@@ -53,11 +53,13 @@ void buildScene() {
 	ISphere *sphere1 = new ISphere(glm::vec3(0.0f, 0.0f, 0.0f), 2.0f);
 	ISphere *sphere2 = new ISphere(glm::vec3(-4.0f, 0.0f, -10.0f), 2.0f);
 	IEllipsoid *ellipsoid = new IEllipsoid(glm::vec3(4.0f, 0.0f, 3.0f), glm::vec3(2.0f, 1.0f, 2.0f));
+	IEllipsoid *ellipsoid2 = new IEllipsoid(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
 	scene.addObject(new VisibleIShape(plane, tin));
 	scene.addObject(new VisibleIShape(sphere1, silver));
 	scene.addObject(new VisibleIShape(sphere2, bronze));
 	scene.addObject(new VisibleIShape(ellipsoid, redPlastic));
+	scene.addObject(new VisibleIShape(ellipsoid2, redPlastic));
 
 	scene.addObject(lights[0]);
 }
@@ -96,7 +98,7 @@ int main(int argc, char *argv[]) {
 	glutMouseFunc(mouse);
 	buildScene();
 
-	rayTrace.defaultColor = gray;
+	rayTrace.defaultColor = white;
 	glutMainLoop();
 
 	return 0;

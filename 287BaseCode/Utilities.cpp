@@ -401,7 +401,7 @@ bool isOrthogonal(const glm::vec3 &a, const glm::vec3 &b) {
  */
 
 float cosBetween(const glm::vec2 &v1, const glm::vec2 &v2) {
-	return std::acos((glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2))));
+	return glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2));
 }
 
 /**
@@ -413,7 +413,7 @@ float cosBetween(const glm::vec2 &v1, const glm::vec2 &v2) {
  */
 
 float cosBetween(const glm::vec3 &v1, const glm::vec3 &v2) {
-	return std::acos((glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2))));
+	return glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2));
 }
 
 /**
@@ -584,7 +584,7 @@ float areaOfParallelogram(const glm::vec3 &v1, const glm::vec3 &v2) {
  */
 
 float areaOfTriangle(const glm::vec3 &pt1, const glm::vec3 &pt2, const glm::vec3 &pt3) {
-	return (1.0f / 2.0f) * glm::length(glm::cross((pt3 - pt1), (pt2 - pt1)));
+	return areaOfParallelogram(pt1, pt3) * 2;
 }
 
 /**
@@ -635,7 +635,7 @@ glm::vec3 pointingVector(const glm::vec3 &pt1, const glm::vec3 &pt2) {
 */
 
 glm::vec3 normalFrom3Points(const glm::vec3 &pt0, const glm::vec3 &pt1, const glm::vec3 &pt2) {	
-	return glm::normalize(glm::vec3(glm::vec3(pt2 - pt1) - pt0));
+	return glm::normalize(glm::cross(glm::vec3(pt1 - pt0), glm::vec3(pt2 - pt0)));
 }
 
 /**
