@@ -9,7 +9,7 @@
   */
 
 color ambientColor(const color &mat, const color &light) {
-	return mat;
+	return glm::vec3(light.x * mat.x, light.y * mat.y, light.z * mat.z);
 }
 
 /**
@@ -24,7 +24,7 @@ color ambientColor(const color &mat, const color &light) {
 
 color diffuseColor(const color &mat, const color &light,
 					const glm::vec3 &l, const glm::vec3 &n) {
-	return mat;
+	return ambientColor(mat, light) * (glm::dot(l, n));
 }
 
 /**
@@ -41,7 +41,7 @@ color diffuseColor(const color &mat, const color &light,
 color specularColor(const color &mat, const color &light,
 					float shininess,
 					const glm::vec3 &r, const glm::vec3 &v) {
-	return mat;
+	return ambientColor(mat, light) * pow(glm::dot(r, v), shininess);
 }
 
 /**
@@ -66,7 +66,13 @@ color totalColor(const Material &mat, const LightColor &lightColor,
 	if (DEBUG_PIXEL) {
 		std::cout << std::endl;
 	}
-	return mat.ambient + mat.diffuse;
+	glm::vec3 l = glm::normalize(lightPos - intersectionPt);
+	glm::vec3 r = 2.0f * glm::dot(l, n) * n - l;
+	color amb = ambientColor(mat.ambient, lightColor.ambient);
+	color diff = diffuseColor(mat.diffuse, lightColor.diffuse, l, n);
+	color spec = specularColor(mat.specular, lightColor.specular, mat.shininess, r, v);
+	
+	return glm::clamp(amb + diff + spec, 0.0f, 1.0f);
 }
 
 /**
@@ -83,8 +89,16 @@ color PositionalLight::illuminate(const glm::vec3 &interceptWorldCoords,
 									const glm::vec3 &normal,
 									const Material &material,
 									const Frame &eyeFrame, bool inShadow) const {
-	if (!isOn) return black;
-	return material.ambient;
+	if (!isOn) {
+		return black;
+	}
+	else if (inShadow) {
+		return glm::clamp(ambientColor(material.ambient, this->lightColorComponents.ambient), 0.0f, 1.0f);
+	}
+	else {		
+		return glm::clamp(totalColor(material, this->lightColorComponents, glm::vec3(eyeFrame.origin - interceptWorldCoords), normal, this->lightPosition,
+			interceptWorldCoords), 0.0f, 1.0f);
+	}
 }
 
 /**
