@@ -24,6 +24,7 @@ void RayTracer::raytraceScene(FrameBuffer &frameBuffer, int depth,
 	const RaytracingCamera &camera = *theScene.camera;
 	const std::vector<VisibleIShapePtr> &objs = theScene.visibleObjects;
 	const std::vector<PositionalLightPtr> &lights = theScene.lights;
+	// where major changes for raytraceing project will be
 	for (int y = 0; y < frameBuffer.getWindowHeight(); ++y) {
 		for (int x = 0; x < frameBuffer.getWindowWidth(); ++x) {
 			Ray ray = camera.getRay((float)x, (float)y);
@@ -44,11 +45,16 @@ void RayTracer::raytraceScene(FrameBuffer &frameBuffer, int depth,
  * @return	The color to be displayed as a result of this ray.
  */
 
+// IScene contains stuff like cameras, lights, and objects
+// Hit record contains normal vector, material, intercept point (t)
 color RayTracer::traceIndividualRay(const Ray &ray, const IScene &theScene, int recursionLevel) const {
 	HitRecord theHit = VisibleIShape::findIntersection(ray, theScene.visibleObjects);
 	color result = defaultColor;
 
+	// must change this as well
 	if (theHit.t < FLT_MAX) {
+		// call illuminate or totalColor
+		// this is where lighting equations must be calculated
 		result = theHit.material.diffuse;
 	}
 	return result;
