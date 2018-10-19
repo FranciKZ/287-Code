@@ -55,7 +55,16 @@ color RayTracer::traceIndividualRay(const Ray &ray, const IScene &theScene, int 
 	if (theHit.t < FLT_MAX) {
 		// call illuminate or totalColor
 		// this is where lighting equations must be calculated
-		result = theHit.material.diffuse;
+		if (theHit.texture != nullptr) { // if has texture then do this
+			float u = glm::clamp(theHit.u, 0.0f, 1.0f);
+			float v = glm::clamp(theHit.v, 0.0f, 1.0f);
+			result = theHit.texture->getPixel(u, v) + 
+				theScene.lights[0]->illuminate(theHit.interceptPoint, theHit.surfaceNormal, theHit.material, theScene.camera->cameraFrame, false);
+		}
+		else { // else comput
+			// add shadow feelers to determine if hit is in shadow
+			result = theScene.lights[0]->illuminate(theHit.interceptPoint, theHit.surfaceNormal, theHit.material, theScene.camera->cameraFrame, false);
+		}		
 	}
 	return result;
 }

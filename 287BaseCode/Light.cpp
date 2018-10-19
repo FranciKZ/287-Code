@@ -41,7 +41,8 @@ color diffuseColor(const color &mat, const color &light,
 color specularColor(const color &mat, const color &light,
 					float shininess,
 					const glm::vec3 &r, const glm::vec3 &v) {
-	return ambientColor(mat, light) * pow(glm::clamp(glm::dot(r, v), 0.0f, 1.0f), shininess);
+	float rv = glm::clamp(glm::dot(r, v), 0.0f, 1.0f);
+	return ambientColor(mat, light) * pow(rv, shininess);
 }
 
 /**
@@ -58,6 +59,7 @@ color specularColor(const color &mat, const color &light,
  * @return	Color produced by a single light at a single point.
  */
  
+// add suppport for attentuation
 color totalColor(const Material &mat, const LightColor &lightColor,
 				const glm::vec3 &v, const glm::vec3 &n,
 				const glm::vec3 &lightPos, const glm::vec3 &intersectionPt,
@@ -92,9 +94,9 @@ color PositionalLight::illuminate(const glm::vec3 &interceptWorldCoords,
 	color ambient = glm::clamp(ambientColor(material.ambient, this->lightColorComponents.ambient), 0.0f, 1.0f);
 
 	color total = glm::clamp(totalColor(material, this->lightColorComponents,
-							glm::vec3(eyeFrame.origin - interceptWorldCoords),
+							glm::normalize(glm::vec3(eyeFrame.origin - interceptWorldCoords)),
 							normal, this->lightPosition,
-							interceptWorldCoords, false, this->attenuationParams), 0.0f, 1.0f);
+							interceptWorldCoords, this->attenuationIsTurnedOn, this->attenuationParams), 0.0f, 1.0f);
 	if (!isOn) {
 		return black;
 	}

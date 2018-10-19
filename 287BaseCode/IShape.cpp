@@ -108,6 +108,10 @@ HitRecord VisibleIShape::findIntersection(const Ray &ray, const std::vector<Visi
 		if (thisHit.t < theHit.t && thisHit.t > 0) {
 			theHit = thisHit;
 			theHit.material = surfaces[i]->material;
+			theHit.texture = surfaces[i]->texture;
+			if (theHit.texture != nullptr) {
+				surfaces[i]->shape->getTexCoords(theHit.interceptPoint, theHit.u, theHit.v);
+			}
 		}
 	}
 	return theHit;
@@ -816,14 +820,16 @@ IClosedCylinderY::IClosedCylinderY(const glm::vec3 &pos, float rad, float len)
 	
 }
 
-void ICylinderY::findClosestIntersection(const Ray &ray, HitRecord &hit) const {
+void IClosedCylinderY::findClosestIntersection(const Ray &ray, HitRecord &hit) const {
 	const glm::vec3 &rayOrigin = ray.origin;
 	const glm::vec3 &rayDirection = ray.direction;
 	static HitRecord hits[2];
 	int numHits = ICylinder::findIntersections(ray, hits);
 	for (int i = 0; i < numHits; i++) {
 		if (hits[i].interceptPoint.y < center.y + length / 2 &&
-			hits[i].interceptPoint.y > center.y - length / 2) {
+			hits[i].interceptPoint.y > center.y - length / 2
+			// check for intersection with disks
+			) {
 			hit = hits[i];
 			return;
 		}
@@ -839,8 +845,12 @@ void ICylinderY::findClosestIntersection(const Ray &ray, HitRecord &hit) const {
 * @param [in,out]	v 	Tex coordinate v.
 */
 
+// needs to be adapted to allow for cylinders NOT centered origin
 void ICylinderY::getTexCoords(const glm::vec3 &pt, float &u, float &v) const {
-	u = v = 0.0f;
+	float angle = normalizeRadians(std::atan2(pt.z, pt.x));
+	float bottom = center.y - length / 2.0f;
+	u = angle / M_2PI;
+	v = (pt.y - bottom) / length;
 }
 
 /**

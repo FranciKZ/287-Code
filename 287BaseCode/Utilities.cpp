@@ -552,8 +552,8 @@ int quadratic(float A, float B, float C, float roots[2]) {
 		else {
 			float x1 = (-B + sqrt(discriminate)) / (2 * A);
 			float x2 = (-B - sqrt(discriminate)) / (2 * A);
-			roots[0] = std::max(x1, x2);
-			roots[1] = std::min(x1, x2);
+			roots[0] = std::min(x1, x2);
+			roots[1] = std::max(x1, x2);
 			return 2;
 		}
 	}
