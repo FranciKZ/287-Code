@@ -827,15 +827,17 @@ void IClosedCylinderY::findClosestIntersection(const Ray &ray, HitRecord &hit) c
 	int numHits = ICylinder::findIntersections(ray, hits);
 	for (int i = 0; i < numHits; i++) {
 		if (hits[i].interceptPoint.y < center.y + length / 2 &&
-			hits[i].interceptPoint.y > center.y - length / 2
-			// check for intersection with disks
-			) {
+		hits[i].interceptPoint.y > center.y - length / 2 && 
+		(hits[i].interceptPoint.x < top.center.x + top.radius ||
+		hits[i].interceptPoint.x > top.center.x - top.radius)) {
 			hit = hits[i];
 			return;
 		}
 	}
 	hit.t = FLT_MAX;
 }
+
+//use quadric surfaces to implement cone
 
 /**
 * @fn	void ICylinderY::getTexCoords(const glm::vec3 &pt, float &u, float &v) const

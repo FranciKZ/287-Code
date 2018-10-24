@@ -92,7 +92,6 @@ color PositionalLight::illuminate(const glm::vec3 &interceptWorldCoords,
 									const Material &material,
 									const Frame &eyeFrame, bool inShadow) const {
 	color ambient = glm::clamp(ambientColor(material.ambient, this->lightColorComponents.ambient), 0.0f, 1.0f);
-
 	color total = glm::clamp(totalColor(material, this->lightColorComponents,
 							glm::normalize(glm::vec3(eyeFrame.origin - interceptWorldCoords)),
 							normal, this->lightPosition,
@@ -118,6 +117,7 @@ color PositionalLight::illuminate(const glm::vec3 &interceptWorldCoords,
  * @return	The color produced at the intercept point, given this light.
  */
 
+// dot product of spotlight direction and pointing vector of light pos, cos(theta), normalize, 
 color SpotLight::illuminate(const glm::vec3 &interceptWorldCoords,
 							const glm::vec3 &normal,
 							const Material &material,
