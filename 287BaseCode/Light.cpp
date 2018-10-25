@@ -73,7 +73,7 @@ color totalColor(const Material &mat, const LightColor &lightColor,
 	color amb = ambientColor(mat.ambient, lightColor.ambient);
 	color diff = diffuseColor(mat.diffuse, lightColor.diffuse, l, n);
 	color spec = specularColor(mat.specular, lightColor.specular, mat.shininess, r, v);
-	
+	// computer attentuation factor and multiply dif f and spec
 	return amb + diff + spec;
 }
 
@@ -122,8 +122,16 @@ color SpotLight::illuminate(const glm::vec3 &interceptWorldCoords,
 							const glm::vec3 &normal,
 							const Material &material,
 							const Frame &eyeFrame, bool inShadow) const {
-	if (!isOn) return black;
-	return material.ambient;
+	// position -> intercept
+	glm::vec3 pointV = glm::normalize(pointingVector(this->lightPosition, interceptWorldCoords));
+	bool inCone = glm::dot(interceptWorldCoords, this->spotDirection) < 
+		this->fov;
+	if (!isOn || !inCone) {
+		return black;
+	}
+	else {
+		PositionalLight::illuminate(interceptWorldCoords, normal, material, eyeFrame, inShadow);
+	}
 }
 
 /**
