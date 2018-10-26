@@ -26,9 +26,10 @@ void RayTracer::raytraceScene(FrameBuffer &frameBuffer, int depth,
 	const std::vector<PositionalLightPtr> &lights = theScene.lights;
 	// where major changes for raytraceing project will be
 	for (int y = 0; y < frameBuffer.getWindowHeight(); ++y) {
-		for (int x = 0; x < frameBuffer.getWindowWidth(); ++x) {
+		for (int x = 0; x < frameBuffer.getWindowWidth(); ++x) {		
 			Ray ray = camera.getRay((float)x, (float)y);
 			color colorForPixel = traceIndividualRay(ray, theScene, depth);
+
 			frameBuffer.setColor(x, y, colorForPixel);
 		}
 	}
@@ -47,40 +48,52 @@ void RayTracer::raytraceScene(FrameBuffer &frameBuffer, int depth,
 
 // IScene contains stuff like cameras, lights, and objects
 // Hit record contains normal vector, material, intercept point (t)
+// send out viewing ray from intercept point to light position
+// check if the ray hits anything
+// then check if the hit is between the light and the lightposition (distance(intercept, second intercept) < distance(intercept, lightPos)
+// must change this as well
 color RayTracer::traceIndividualRay(const Ray &ray, const IScene &theScene, int recursionLevel) const {
 	HitRecord theHit = VisibleIShape::findIntersection(ray, theScene.visibleObjects);
+	HitRecord transHit = VisibleIShape::findIntersection(ray, theScene.transparentObjects);
 	color result = defaultColor;
-	bool inShadow;
-	// send out viewing ray from intercept point to light position
-	// check if the ray hits anything
-	// then check if the hit is between the light and the lightposition (distance(intercept, second intercept) < distance(intercept, lightPos)
-	// must change this as well
-	Ray shadowFeeler(theHit.interceptPoint, /* direction to camera */);
-	HitRecord shadowHit = VisibleIShape::findIntersection(shadowFeeler, theScene.visibleObjects);
-	if (shadowHit.t < FLT_MAX) {
-		float distToLight = glm::distance(shadowFeeler.origin, theScene.lights[0]->lightPosition);
-		float distToHit = glm::distance(shadowFeeler.origin, shadowHit.interceptPoint);
-		inShadow = true;
-	}
+	bool inShadow = false;
 	if (theHit.t < FLT_MAX) {
-		for (int i = 0; i < theScene.lights.size(); i++) {
-			if (theScene.lights[i]->isOn) {
-				// call illuminate or totalColor
-				// this is where lighting equations must be calculated
-				if (theHit.texture != nullptr) { // if has texture then do this
-					float u = glm::clamp(theHit.u, 0.0f, 1.0f);
-					float v = glm::clamp(theHit.v, 0.0f, 1.0f);
-					result += theHit.texture->getPixel(u, v) +
-						theScene.lights[0]->illuminate(theHit.interceptPoint, 
-							theHit.surfaceNormal, theHit.material, theScene.camera->cameraFrame, inShadow);
-				}
-				else { // else comput
-					   // add shadow feelers to determine if hit is in shadow
-					result += theScene.lights[0]->illuminate(theHit.interceptPoint, theHit.surfaceNormal, 
-						theHit.material, theScene.camera->cameraFrame, inShadow);
-				}
+		// if this then add alpha values
+		if (theHit.t > transHit.t) {
+
+		}
+		else {
+			//for (int i = 0; i < theScene.lights.size(); i++) {
+			shadowFeeler(ray, theScene, recursionLevel, inShadow, theHit, 0);
+			if (theHit.texture != nullptr) { // if has texture then do this				
+				float u = glm::clamp(theHit.u, 0.0f, 1.0f);
+				float v = glm::clamp(theHit.v, 0.0f, 1.0f);
+				result = theHit.texture->getPixel(u, v) +
+					theScene.lights[0]->illuminate(theHit.interceptPoint,
+						theHit.surfaceNormal, theHit.material, theScene.camera->cameraFrame, inShadow);
+			}
+			else {
+				result = theScene.lights[0]->illuminate(theHit.interceptPoint, theHit.surfaceNormal,
+					theHit.material, theScene.camera->cameraFrame, inShadow);
 			}
 		}
+		//}
 	}
 	return result;
+}
+
+void RayTracer::shadowFeeler(const Ray &ray, const IScene &theScene, int recursionLevel, bool &inShadow, HitRecord theHit, int i) const {
+	glm::vec3 shadowFeelerOrig = (theHit.interceptPoint + EPSILON * theHit.surfaceNormal);
+	Ray shadowFeeler(shadowFeelerOrig, pointingVector(shadowFeelerOrig, theScene.lights[i]->lightPosition));
+	HitRecord shadowHit = VisibleIShape::findIntersection(shadowFeeler, theScene.visibleObjects);
+	if (shadowHit.t < FLT_MAX) {
+		float distToLight = glm::distance(shadowFeeler.origin, theScene.lights[i]->lightPosition);
+		float distToHit = glm::distance(shadowFeeler.origin, shadowHit.interceptPoint);
+		if (distToHit < distToLight) {
+			inShadow = true;
+		}
+		else {
+			inShadow = false;
+		}
+	}
 }

@@ -32,6 +32,7 @@ PerspectiveCamera pCamera(glm::vec3(0, 10, 10), ORIGIN3D, Y_AXIS, M_PI_2);
 OrthographicCamera oCamera(glm::vec3(0, 10, 10), ORIGIN3D, Y_AXIS, 25.0f);
 RaytracingCamera *cameras[] = { &pCamera, &oCamera };
 int currCamera = 0;
+bool twoCameras = false;
 IScene scene(cameras[currCamera], false);
 
 void render() {
@@ -56,12 +57,21 @@ IShape *plane = new IPlane(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0
 //IEllipsoid *ellipsoid = new IEllipsoid(glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, 2.0f));
 ICylinderY *openCylinder = new ICylinderY(glm::vec3(4.0f, 0.0f, 0.0f), 5.0f, 10.0f);
 IClosedCylinderY *closedCylinder = new IClosedCylinderY(glm::vec3(-5.0f, 6.0f, 10.0f), 3.0f, 7.0f);
+Image im("usflag.ppm");
+const QuadricParameters qParams(1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+
+ICylinderX *openXCylinder = new ICylinderX(glm::vec3(15.0f, 3.0f, 3.0f), 2.0f, 7.0f);
 
 void buildScene() {
+	VisibleIShapePtr p;
 	scene.addObject(new VisibleIShape(plane, tin));
-	scene.addObject(new VisibleIShape(openCylinder, greenPlastic));
+	//scene.addObject(new VisibleIShape(openCylinder, greenPlastic));
 	scene.addObject(new VisibleIShape(sphere, silver));
 	scene.addObject(new VisibleIShape(closedCylinder, redPlastic));
+	//scene.addObject(p = new VisibleIShape(openCylinder, redRubber));
+	//p->setTexture(&im);
+	scene.addObject(p = new VisibleIShape(openXCylinder, tin));
+	p->setTexture(&im);
 	//scene.addObject(new VisibleIShape(ellipsoid, redPlastic));
 
 	scene.addObject(lights[0]);
@@ -107,7 +117,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'v':	lights[currLight]->isTiedToWorld = !lights[currLight]->isTiedToWorld;
 				// switch camera location
 				if (lights[currLight]->isTiedToWorld) {
-					lights[currLight]->lightPosition = cameras[currCamera]->cameraFrame.origin;
+					lights[currLight]->lightPosition = lights[currLight]->lightPosition + cameras[currCamera]->cameraFrame.origin;
 				}
 				else {
 					if (lights[currLight] = 0) {

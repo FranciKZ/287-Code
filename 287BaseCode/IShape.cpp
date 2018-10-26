@@ -781,6 +781,32 @@ void ICylinder::computeAqBqCq(const Ray &ray, float &Aq, float &Bq, float &Cq) c
 		I * Ro.z + J;
 }
 
+ICylinderX::ICylinderX(const glm::vec3 &pos, float rad, float len)
+	: ICylinder(pos, rad, len, QuadricParameters::cylinderXQParams(rad)) {
+}
+
+void ICylinderX::findClosestIntersection(const Ray &ray, HitRecord &hit) const{
+	const glm::vec3 &rayOrigin = ray.origin;
+	const glm::vec3 &rayDirection = ray.direction;
+	static HitRecord hits[2];
+	int numHits = ICylinder::findIntersections(ray, hits);
+	for (int i = 0; i < numHits; i++) {
+		if (hits[i].interceptPoint.x < center.x + length / 2 &&
+			hits[i].interceptPoint.x > center.x - length / 2) {
+			hit = hits[i];
+			return;
+		}
+	}
+	hit.t = FLT_MAX;
+}
+
+void ICylinderX::getTexCoords(const glm::vec3 &pt, float &u, float &v) const {
+	float angle = normalizeRadians(std::atan2(pt.x, pt.y));
+	float bottom = center.x - length / 2.0f;
+	u = angle / M_2PI;
+	v = (pt.x - bottom) / length;
+}
+
 /**
  * @fn	ICylinderY::ICylinderY(const glm::vec3 &pos, float rad, float len) : ICylinder(pos, rad, len, QuadricParameters::cylinderYQParams(rad))
  * @brief	Constructor
@@ -828,8 +854,8 @@ void IClosedCylinderY::findClosestIntersection(const Ray &ray, HitRecord &hit) c
 	for (int i = 0; i < numHits; i++) {
 		if (hits[i].interceptPoint.y < center.y + length / 2 &&
 		hits[i].interceptPoint.y > center.y - length / 2 && 
-		(hits[i].interceptPoint.x < top.center.x + top.radius ||
-		hits[i].interceptPoint.x > top.center.x - top.radius)) {
+		(hits[i].interceptPoint.y < top.center.y + top.radius ||
+		hits[i].interceptPoint.y > top.center.y - top.radius)) {
 			hit = hits[i];
 			return;
 		}

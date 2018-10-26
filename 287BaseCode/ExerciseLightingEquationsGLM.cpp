@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 	std::cout << "Diffuse: " << diff << std::endl;
 	std::cout << "Specular: " << spec << std::endl;
 	std::cout << "Summation: " << sum << std::endl;
-	color COLOR = totalColor(mat, lightColor, v, n, lightPos, THEVERT, false, ATparams);
+	color COLOR = totalColor(mat, lightColor, v, n, lightPos, THEVERT, true, ATparams);
 	float dist = glm::distance(lightPos, THEVERT);
 	std::cout << "Attenuation factor: " << ATparams.factor(dist) << std::endl;
 
