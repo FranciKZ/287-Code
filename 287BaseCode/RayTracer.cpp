@@ -58,6 +58,9 @@ color RayTracer::traceIndividualRay(const Ray &ray, const IScene &theScene, int 
 	color result = defaultColor;
 	bool inShadow = false;
 	if (theHit.t < FLT_MAX) {
+		if (glm::dot(ray.direction, theHit.surfaceNormal) > 0) {
+			theHit.surfaceNormal = -theHit.surfaceNormal;
+		}
 		shadowFeeler(ray, theScene, recursionLevel, inShadow, theHit, 0);
 		if (theHit.texture != nullptr) {
 			float u = glm::clamp(theHit.u, 0.0f, 1.0f);
@@ -66,24 +69,27 @@ color RayTracer::traceIndividualRay(const Ray &ray, const IScene &theScene, int 
 				theScene.lights[0]->illuminate(theHit.interceptPoint,
 					theHit.surfaceNormal, theHit.material, 
 					theScene.camera->cameraFrame, inShadow);
-
 		}
 		else {
 			result = theScene.lights[0]->illuminate(theHit.interceptPoint, theHit.surfaceNormal,
 				theHit.material, theScene.camera->cameraFrame, inShadow);
 		}
-		//for (int i = 0; i < theScene.lights.size(); i++) {
-		// if this then add alpha values
 		if (transHit.t < FLT_MAX) {
-			color transHitColor = theScene.lights[0]->illuminate(transHit.interceptPoint,
-				transHit.surfaceNormal, transHit.material, theScene.camera->cameraFrame, inShadow);
 			float opaqueHitDist = glm::distance(theHit.interceptPoint, theScene.lights[0]->lightPosition);
 			float transHitDist = glm::distance(transHit.interceptPoint, theScene.lights[0]->lightPosition);
 			if (opaqueHitDist > transHitDist) {
-				result = (1 - transHit.material.alpha) * result + (transHit.material.alpha) * transHitColor;
+				color transHitColor = theScene.lights[0]->illuminate(transHit.interceptPoint,
+					transHit.surfaceNormal, transHit.material, theScene.camera->cameraFrame, inShadow);
+				color finalColor = (1 - transHit.material.alpha) * result + (transHit.material.alpha) * transHitColor;
+				result = finalColor;
 			}
 		}
-		//}
+	}
+	else if (theHit.t == FLT_MAX && transHit.t < FLT_MAX) {
+		color transHitColor = theScene.lights[0]->illuminate(transHit.interceptPoint,
+			transHit.surfaceNormal, transHit.material, theScene.camera->cameraFrame, inShadow);
+		color finalColor = (1 - transHit.material.alpha) * defaultColor + (transHit.material.alpha) * transHitColor;
+		result = finalColor;
 	}
 	return result;
 }

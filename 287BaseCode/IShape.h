@@ -210,6 +210,12 @@ struct ICylinder : public IQuadricSurface {
 	virtual void computeAqBqCq(const Ray &ray, float &Aq, float &Bq, float &Cq) const;
 };
 
+struct ICylinderX : public ICylinder {
+	ICylinderX(const glm::vec3 &position, float R, float len);
+	virtual void findClosestIntersection(const Ray&ray, HitRecord &hit) const;
+	void getTexCoords(const glm::vec3 &pt, float &u, float &v) const;
+};
+
 /**
  * @struct	ICylinderY
  * @brief	Implicit representation of open cylinder oriented along y-axis coordinate.

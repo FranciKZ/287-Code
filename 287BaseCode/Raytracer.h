@@ -15,6 +15,7 @@ struct RayTracer {
 	RayTracer(const color &defaultColor);
 	void raytraceScene(FrameBuffer &frameBuffer, int depth,
 						const IScene &theScene) const;
+	void shadowFeeler(const Ray &ray, const IScene &theScene, int recursionLevel, bool &inShadow, HitRecord theHit, int i) const;
 protected:
 	color traceIndividualRay(const Ray &ray, const IScene &theScene, int recursionLevel) const;
 };

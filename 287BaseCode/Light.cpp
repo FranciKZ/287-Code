@@ -104,12 +104,12 @@ color PositionalLight::illuminate(const glm::vec3 &interceptWorldCoords,
 	if (!isOn) {
 		return black;
 	}
-	else if (inShadow) {
+	else if (inShadow || material.alpha < 1.0f) {
 		return ambient;
 	}
-	else if (material.alpha < 1.0f) {
-		return (1 - material.alpha) * DEFAULT_COLOR + (material.alpha) * ambient;
-	}
+	//else if (material.alpha < 1.0f) {
+	//	return (1 - material.alpha) * DEFAULT_COLOR + (material.alpha) * ambient;
+	//}
 	else {		
 		return total;
 	}

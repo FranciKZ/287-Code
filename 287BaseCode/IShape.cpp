@@ -801,7 +801,7 @@ void ICylinderX::findClosestIntersection(const Ray &ray, HitRecord &hit) const{
 }
 
 void ICylinderX::getTexCoords(const glm::vec3 &pt, float &u, float &v) const {
-	float angle = normalizeRadians(std::atan2(pt.x, pt.y));
+	float angle = normalizeRadians(std::atan2(pt.z, pt.y));
 	float bottom = center.x - length / 2.0f;
 	u = angle / M_2PI;
 	v = (pt.x - bottom) / length;
