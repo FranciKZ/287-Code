@@ -115,15 +115,6 @@ void keyboard(unsigned char key, int x, int y) {
 				break;
 	case 'V':
 	case 'v':	lights[currLight]->isTiedToWorld = !lights[currLight]->isTiedToWorld;
-				// switch camera location
-				if (lights[currLight]->isTiedToWorld) {
-					lights[currLight]->lightPosition = lights[currLight]->lightPosition + cameras[currCamera]->cameraFrame.origin;
-				}
-				else {
-					if (lights[currLight] = 0) {
-						lights[currLight]->lightPosition = glm::vec3(10, 10, 10);
-					}
-				}
 				std::cout << (lights[currLight]->isTiedToWorld ? "World" : "Camera") << std::endl;
 				break;
 	case 'Q':

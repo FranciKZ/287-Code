@@ -132,7 +132,7 @@ color SpotLight::illuminate(const glm::vec3 &interceptWorldCoords,
 							const Frame &eyeFrame, bool inShadow) const {
 	// position -> intercept
 	glm::vec3 pointV = glm::normalize(pointingVector(lightPosition, interceptWorldCoords));
-	bool inCone = deg2rad(glm::dot(pointV, spotDirection)) < 
+	bool inCone = cos(glm::dot(pointV, spotDirection)) < 
 		fov;
 	if (!isOn || !inCone) {
 		return black;
