@@ -58,23 +58,29 @@ color RayTracer::traceIndividualRay(const Ray &ray, const IScene &theScene, int 
 	color result = defaultColor;
 	bool inShadow = false;
 	if (theHit.t < FLT_MAX) {
-		// if this then add alpha values
-		if (theHit.t > transHit.t) {
+		shadowFeeler(ray, theScene, recursionLevel, inShadow, theHit, 0);
+		if (theHit.texture != nullptr) {
+			float u = glm::clamp(theHit.u, 0.0f, 1.0f);
+			float v = glm::clamp(theHit.v, 0.0f, 1.0f);
+			result = theHit.texture->getPixel(u, v); +
+				theScene.lights[0]->illuminate(theHit.interceptPoint,
+					theHit.surfaceNormal, theHit.material, 
+					theScene.camera->cameraFrame, inShadow);
 
 		}
 		else {
-			//for (int i = 0; i < theScene.lights.size(); i++) {
-			shadowFeeler(ray, theScene, recursionLevel, inShadow, theHit, 0);
-			if (theHit.texture != nullptr) { // if has texture then do this				
-				float u = glm::clamp(theHit.u, 0.0f, 1.0f);
-				float v = glm::clamp(theHit.v, 0.0f, 1.0f);
-				result = theHit.texture->getPixel(u, v) +
-					theScene.lights[0]->illuminate(theHit.interceptPoint,
-						theHit.surfaceNormal, theHit.material, theScene.camera->cameraFrame, inShadow);
-			}
-			else {
-				result = theScene.lights[0]->illuminate(theHit.interceptPoint, theHit.surfaceNormal,
-					theHit.material, theScene.camera->cameraFrame, inShadow);
+			result = theScene.lights[0]->illuminate(theHit.interceptPoint, theHit.surfaceNormal,
+				theHit.material, theScene.camera->cameraFrame, inShadow);
+		}
+		//for (int i = 0; i < theScene.lights.size(); i++) {
+		// if this then add alpha values
+		if (transHit.t < FLT_MAX) {
+			color transHitColor = theScene.lights[0]->illuminate(transHit.interceptPoint,
+				transHit.surfaceNormal, transHit.material, theScene.camera->cameraFrame, inShadow);
+			float opaqueHitDist = glm::distance(theHit.interceptPoint, theScene.lights[0]->lightPosition);
+			float transHitDist = glm::distance(transHit.interceptPoint, theScene.lights[0]->lightPosition);
+			if (opaqueHitDist > transHitDist) {
+				result = (1 - transHit.material.alpha) * result + (transHit.material.alpha) * transHitColor;
 			}
 		}
 		//}
