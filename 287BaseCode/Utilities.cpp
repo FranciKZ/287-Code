@@ -658,7 +658,7 @@ glm::vec3 normalFrom3Points(const std::vector<glm::vec3> pts) {
 */
 
 glm::vec3 getRow(const glm::mat3 &mat, int row) {
-	return glm::vec3();
+	return glm::vec3(mat[0][row], mat[1][row], mat[2][row]);
 }
 
 /**
@@ -670,7 +670,7 @@ glm::vec3 getRow(const glm::mat3 &mat, int row) {
  */
 
 glm::vec3 getCol(const glm::mat3 &mat, int col) {
-	return glm::vec3();
+	return glm::vec3(mat[col][0], mat[col][1], mat[col][2]);
 }
 
 /**
@@ -681,7 +681,7 @@ glm::vec3 getCol(const glm::mat3 &mat, int col) {
 */
 
 bool isInvertible(const glm::mat2 &mat) {
-	return false;
+	return glm::determinant(mat) != 0;
 }
 
 /**
@@ -692,7 +692,7 @@ bool isInvertible(const glm::mat2 &mat) {
  */
 
 bool isInvertible(const glm::mat3 &mat) {
-	return false;
+	return glm::determinant(mat) != 0;
 }
 
 /**
@@ -704,8 +704,11 @@ bool isInvertible(const glm::mat3 &mat) {
  */
 
 glm::vec3 solveLinearSystem(const glm::mat3 &M, const glm::vec3 &y) {
-	glm::vec3 result;
-	return result;
+	if (glm::determinant(M) == 0) {
+		return glm::vec3(0, 0, 0);
+	}
+	glm::mat3 Minv = glm::inverse(M);
+	return Minv * y;
 }
 
 /**
@@ -716,7 +719,12 @@ glm::vec3 solveLinearSystem(const glm::mat3 &M, const glm::vec3 &y) {
  */
 
 glm::mat3 addMatrices(const std::vector<glm::mat3> &M) {
-	glm::mat3 result;
+	glm::mat3 result = M[0];
+	
+	for (int i = 1; i < M.size(); i++) {
+		result += M[i];
+	}
+
 	return result;
 }
 
@@ -728,7 +736,12 @@ glm::mat3 addMatrices(const std::vector<glm::mat3> &M) {
  */
 
 glm::mat3 multiplyMatrices(const std::vector<glm::mat3> &M) {
-	glm::mat3 result;
+	glm::mat3 result = M[0];
+
+	for (int i = 1; i < M.size(); i++) {
+		result *= M[i];
+	}
+
 	return result;
 }
 
@@ -741,7 +754,7 @@ glm::mat3 multiplyMatrices(const std::vector<glm::mat3> &M) {
  */
 
 glm::vec3 multiplyMatrixAndVertex(const glm::mat3 &M, const glm::vec3 &x) {
-	return glm::vec3();
+	return M * x;
 }
 
 /**
@@ -753,7 +766,8 @@ glm::vec3 multiplyMatrixAndVertex(const glm::mat3 &M, const glm::vec3 &x) {
  */
 
 glm::vec3 multiplyMatricesAndVertex(const std::vector<glm::mat3> &M, const glm::vec3 &x) {
-	return glm::vec3();
+	glm::mat3 res = multiplyMatrices(M);
+	return multiplyMatrixAndVertex(res, x);
 }
 
 /**
@@ -766,6 +780,9 @@ glm::vec3 multiplyMatricesAndVertex(const std::vector<glm::mat3> &M, const glm::
 
 std::vector<glm::vec3> multiplyMatrixAndVertices(const glm::mat3 &M, const std::vector<glm::vec3> &verts) {
 	std::vector<glm::vec3> result;
+	for (int i = 0; i < verts.size(); i++) {
+		result.push_back(multiplyMatrixAndVertex(M, verts[i]));
+	}
 	return result;
 }
 
@@ -779,7 +796,15 @@ std::vector<glm::vec3> multiplyMatrixAndVertices(const glm::mat3 &M, const std::
 
 std::vector<glm::vec3> multiplyMatricesAndVertices(const std::vector<glm::mat3> &M, const std::vector<glm::vec3> &verts) {
 	std::vector<glm::vec3> result;
+	glm::mat3 bigmat = multiplyMatrices(M);
+	for (int i = 0; i < verts.size(); i++) {
+		result.push_back(multiplyMatrixAndVertex(bigmat, verts[i]));
+	}
 	return result;
+}
+
+glm::mat3 mystery(float a, float b) {
+	return glm::mat3(a, b, a, b, b, a, b, b, a);
 }
 
 /**
@@ -803,7 +828,27 @@ glm::mat2 myinverse(const glm::mat2 &M) {
 */
 
 glm::mat3 T(float dx, float dy) {
+	return glm::mat3(1, 0, 0, 0, 1, 0, dx, dy, 1);
+}
+
+
+glm::mat3 reflectAcrossOrigin() {
+	return S(-1, -1);
+}
+
+glm::mat3 reflectAcrossYaxis() {
+	return S(-1, 1);
+}
+
+//First translate down
+//T->R->S->R->T
+glm::mat3 reflectAcrossLineYeqXplus50() {
 	return glm::mat3();
+}
+
+// R(ang2) -> T(distanceFromOrigin) -> R(ang1);
+glm::mat3 rotateAroundOwnAxisAndAroundOrigin(float distFromOrigin, float angleAboutOwnAxis, float angleAboutOrigin) {
+	return glm::mat3(R(angleAboutOwnAxis) * T(distFromOrigin, 0) * R(angleAboutOrigin));
 }
 
 /**
@@ -815,7 +860,7 @@ glm::mat3 T(float dx, float dy) {
  */
 
 glm::mat3 S(float sx, float sy) {
-	return glm::mat3();
+	return glm::mat3(sx, 0, 0, 0, sy, 0, 0, 0, 1);
 }
 
 /**
@@ -826,7 +871,8 @@ glm::mat3 S(float sx, float sy) {
  */
 
 glm::mat3 R(float deg) {
-	return glm::mat3();
+	float rad = deg2rad(deg);
+	return glm::mat3(cos(rad), sin(rad), 0, -sin(rad), cos(rad), 0, 0, 0, 1);
 }
 
 /**
@@ -837,8 +883,10 @@ glm::mat3 R(float deg) {
  */
 
 glm::mat3 horzShear(float a) {
-	return glm::mat3();
+	return glm::mat3(1, 0, 0, a, 1, 0, 0, 0, 1);
 }
+
+
 
 /**
  * @fn	glm::mat3 vertShear(float a)
@@ -848,7 +896,7 @@ glm::mat3 horzShear(float a) {
  */
 
 glm::mat3 vertShear(float a) {
-	return glm::mat3();
+	return glm::mat3(1, a, 0, 0, 1, 0, 0, 0, 1);
 }
 
 /**

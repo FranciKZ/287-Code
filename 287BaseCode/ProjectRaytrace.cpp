@@ -20,7 +20,7 @@ bool twoViewOn = false;
 
 std::vector<PositionalLightPtr> lights = {
 						new PositionalLight(glm::vec3(10, 10, 10), pureWhiteLight),
-						new SpotLight(glm::vec3(2, 5, -2), glm::vec3(0,-1,0), glm::radians(45.0f), pureWhiteLight)
+						new SpotLight(glm::vec3(-19.5, 5, 11), glm::vec3(0.5,-1.5,0), glm::radians(45.0f), pureWhiteLight)
 };
 
 PositionalLightPtr posLight = lights[0];
@@ -29,7 +29,7 @@ SpotLightPtr spotLight = (SpotLightPtr)lights[1];
 FrameBuffer frameBuffer(WINDOW_WIDTH, WINDOW_HEIGHT);
 RayTracer rayTrace(lightGray);
 PerspectiveCamera pCamera(glm::vec3(0, 10, 10), ORIGIN3D, Y_AXIS, M_PI_2);
-OrthographicCamera oCamera(glm::vec3(0, 10, 10), ORIGIN3D, Y_AXIS, 25.0f);
+OrthographicCamera oCamera(glm::vec3(0, 10, 10), ORIGIN3D, Y_AXIS, 45.0f);
 RaytracingCamera *cameras[] = { &pCamera, &oCamera };
 int currCamera = 0;
 bool twoCameras = false;
@@ -38,8 +38,8 @@ IScene scene(cameras[currCamera], false);
 void render() {
 	int frameStartTime = glutGet(GLUT_ELAPSED_TIME);
 	cameras[currCamera]->calculateViewingParameters(frameBuffer.getWindowWidth()/2, frameBuffer.getWindowHeight());
-	cameras[currCamera]->changeConfiguration(glm::vec3(0, 15, 15), ORIGIN3D, Y_AXIS);
-	rayTrace.raytraceScene(frameBuffer, numReflections, scene);
+	cameras[currCamera]->changeConfiguration(glm::vec3(-2, 8, -8), ORIGIN3D, Y_AXIS);
+	rayTrace.raytraceScene(frameBuffer, numReflections, scene, antiAliasing);
 
 	int frameEndTime = glutGet(GLUT_ELAPSED_TIME); // Get end time
 	float totalTimeSec = (frameEndTime - frameStartTime) / 1000.0f;
@@ -52,24 +52,21 @@ void resize(int width, int height) {
 	glutPostRedisplay();
 } 
 
-ISphere *sphere = new ISphere(glm::vec3(-4.0f, 0.0f, 0.0f), 2.0f);
+ISphere *sphere = new ISphere(glm::vec3(-6.0f, 0.0f, -3.0f), 3.0f);
 IShape *plane = new IPlane(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 //IEllipsoid *ellipsoid = new IEllipsoid(glm::vec3(4.0f, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, 2.0f));
 ICylinderY *openCylinder = new ICylinderY(glm::vec3(4.0f, 0.0f, 0.0f), 5.0f, 10.0f);
-IClosedCylinderY *closedCylinder = new IClosedCylinderY(glm::vec3(-5.0f, 6.0f, 10.0f), 3.0f, 7.0f);
-IShape *transPlane = new IPlane(glm::vec3(10.0f, 4.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+IClosedCylinderY *closedCylinder = new IClosedCylinderY(glm::vec3(-10.0f, 0.0f, 5.0f), 3.0f, 7.0f);
+IShape *transPlane = new IPlane(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 Image im("usflag.ppm");
-ICylinderX *openXCylinder = new ICylinderX(glm::vec3(15.0f, 3.0f, 3.0f), 2.0f, 7.0f);
+ICylinderX *openXCylinder = new ICylinderX(glm::vec3(0.0f,0.0f, 0.0f), 2.0f, 7.0f);
 
 void buildScene() {
 	VisibleIShapePtr p;
 	scene.addObject(new VisibleIShape(plane, tin));
 	scene.addTransparentObject(new VisibleIShape(transPlane, redPlastic), 0.4f);
-	//scene.addObject(new VisibleIShape(openCylinder, greenPlastic));
 	scene.addObject(new VisibleIShape(sphere, silver));
 	scene.addObject(new VisibleIShape(closedCylinder, redPlastic));
-	//scene.addObject(p = new VisibleIShape(openCylinder, redRubber));
-	//p->setTexture(&im);
 	scene.addObject(p = new VisibleIShape(openXCylinder, tin));
 	p->setTexture(&im);
 	//scene.addObject(new VisibleIShape(ellipsoid, redPlastic));
@@ -85,13 +82,20 @@ void incrementClamp(float &v, float delta, float lo, float hi) {
 void incrementClamp(int &v, int delta, int lo, int hi) {
 	v = glm::clamp(v + delta, lo, hi);
 }
-
+bool incX = true;
 void timer(int id) {
 	static int x = 0;
+
 	if (isAnimated) {
-		x+=5;
-		std::cout << x << std::endl;
-		sphere->center = glm::vec3(x, 0, 0);
+		if (x == 50)
+			incX = false;
+		if (x == 0)
+			incX = true;
+		if (incX)
+			x += 2;
+		if (!incX)
+			x -= 2;
+		sphere->center = glm::vec3(-6.0f, 0, x);
 		// modify something in your scene
 	}
 	glutTimerFunc(TIME_INTERVAL, timer, 0);

@@ -853,9 +853,7 @@ void IClosedCylinderY::findClosestIntersection(const Ray &ray, HitRecord &hit) c
 	int numHits = ICylinder::findIntersections(ray, hits);
 	for (int i = 0; i < numHits; i++) {
 		if (hits[i].interceptPoint.y < center.y + length / 2 &&
-		hits[i].interceptPoint.y > center.y - length / 2 && 
-		(hits[i].interceptPoint.y < top.center.y + top.radius ||
-		hits[i].interceptPoint.y > top.center.y - top.radius)) {
+		hits[i].interceptPoint.y > center.y - length / 2){
 			hit = hits[i];
 			return;
 		}

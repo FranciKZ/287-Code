@@ -85,6 +85,7 @@ struct IDisk : public IShape {
 	float radius;
 };
 
+
 /**
  * @struct	IRect
  * @brief	Implicit representation of a rectangle, with a particular center
