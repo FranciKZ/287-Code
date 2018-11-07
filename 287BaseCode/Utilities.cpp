@@ -831,6 +831,9 @@ glm::mat3 T(float dx, float dy) {
 	return glm::mat3(1, 0, 0, 0, 1, 0, dx, dy, 1);
 }
 
+glm::mat3 scale2XAboutPoint(float x, float y) {
+	return S(2, 2);
+}
 
 glm::mat3 reflectAcrossOrigin() {
 	return S(-1, -1);
@@ -843,7 +846,7 @@ glm::mat3 reflectAcrossYaxis() {
 //First translate down
 //T->R->S->R->T
 glm::mat3 reflectAcrossLineYeqXplus50() {
-	return glm::mat3();
+	return T(0, -50) * R(45) * S(-1, -1) * R(45) * T(0, 50);
 }
 
 // R(ang2) -> T(distanceFromOrigin) -> R(ang1);
