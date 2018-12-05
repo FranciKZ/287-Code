@@ -108,7 +108,7 @@ color PositionalLight::illuminate(const glm::vec3 &interceptWorldCoords,
 		return ambient;
 	}
 	else if (material.alpha < 1.0f) {
-		return (1 - material.alpha) * DEFAULT_COLOR + (material.alpha) * ambient;
+		return total;
 	}
 	else {		
 		return total;
